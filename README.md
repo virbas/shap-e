@@ -1,3 +1,24 @@
+# Docker container for Shap-e (https://github.com/openai/shap-e)
+- Build an image<br />
+`docker build -t shap-e .`
+
+- Create container, point **D:\mount** to the model output directory (change **D:\mount** to your needs)<br />
+`docker run -v D:\mount://usr/src/shap-e/shap_e/output --gpus=all  -dit --name shap-e shap-e`
+
+- Alternatively, no mounting of local folder to the output folder <br />
+`docker run --gpus=all  -dit --name shap-e shap-e`
+
+- Log into docker container<br />
+`docker exec -it shap-e "/bin/bash"`
+
+- Run generator (while in container) <br />
+`python text-to-glb.py`
+
+<br />
+
+----------------
+<br />
+
 # Shap-E
 
 This is the official code and model release for [Shap-E: Generating Conditional 3D Implicit Functions](https://arxiv.org/abs/2305.02463).

@@ -1,6 +1,7 @@
 import torch
 import trimesh
 import numpy as np
+import tempfile
 
 from shap_e.diffusion.sample import sample_latents
 from shap_e.diffusion.gaussian_diffusion import diffusion_from_config
@@ -44,12 +45,17 @@ def generate(prompt, name):
   from shap_e.util.notebooks import decode_latent_mesh
 
   for i, latent in enumerate(latents):
-    t = decode_latent_mesh(xm, latent).tri_mesh()
+    """t = decode_latent_mesh(xm, latent).tri_mesh()
     ply_path = f'output/{name}_{i}.ply'
     with open(ply_path, 'wb') as f:
-      t.write_ply(f)
-    
-    ply_mesh = trimesh.load(ply_path)
+      t.write_ply(f)"""
+
+    ply_path = tempfile.NamedTemporaryFile(suffix='.ply',
+                                               delete=True,
+                                               mode='w+b')
+    decode_latent_mesh(xm, latent).tri_mesh().write_ply(ply_path.file)
+    ply_path.seek(0)
+    ply_mesh = trimesh.load(ply_path.name)
     rot = trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0])
     ply_mesh = ply_mesh.apply_transform(rot)
     rot = trimesh.transformations.rotation_matrix(np.pi, [0, 1, 0])
@@ -57,6 +63,7 @@ def generate(prompt, name):
 
     mesh_path = f'output/{name}_{i}.glb'
     ply_mesh.export(mesh_path, file_type='glb')
+    ply_path.close()
 
 
 while(True):

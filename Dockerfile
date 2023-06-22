@@ -29,19 +29,15 @@ RUN conda install --name pytorch3d pytorch3d -c pytorch3d
 
 RUN pip install --upgrade pip
 RUN pip install scikit-image matplotlib imageio black isort flake8 flake8-bugbear flake8-comprehensions ipywidgets PyYAML trimesh
+# RUN pip install tempfile
 
-RUN git clone https://github.com/openai/shap-e.git
+# RUN git clone https://github.com/openai/shap-e.git
 WORKDIR /usr/src/shap-e
-
+# copy over the current directory to WORKDIR
+COPY . .
 # pip install -e . installs shap_e into the default conda environment..
 RUN ["conda", "run", "-n", "pytorch3d", "pip", "install", "-e", "."]
 
-# store the generated .glb here
-RUN mkdir shap_e/output
+# when logging into container, this will be the initial dir
+WORKDIR /usr/src/shap-e/shap_e
 
-# docker build -t shap-e-full .
-# docker run -v D:\AI\shap-e\shap-e:/shap-e --gpus=all  -dit --name shap-e-full shap-e-full
-# docker exec -it shap-e-full "/bin/bash"
-
-
-#docker run -v D:\AI\shap-e\shap-e:/shap-e-src --gpus=all  -dit --name shap-e-full shap-e-full
